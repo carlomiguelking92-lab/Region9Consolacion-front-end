@@ -2077,11 +2077,11 @@ function openDepartment(deptKey) {
         detail.style.justifyContent = 'flex-start';
     }
 
-    // Toggle sidebar navigation states cleanly
+    // Toggle sidebar navigation states: Show "Back to Departments", Hide "Active Departments"
     const backDeptsItem = document.getElementById('nav-back-depts');
     const mainDeptsItem = document.getElementById('nav-main-depts');
     if (backDeptsItem) backDeptsItem.style.display = 'flex';
-    if (mainDeptsItem) mainDeptsItem.classList.remove('active');
+    if (mainDeptsItem) mainDeptsItem.style.display = 'none';
 
     const titleEl = document.getElementById('detail-dept-title');
     
@@ -2109,11 +2109,11 @@ function backToOverview() {
     if (detail) detail.style.display = 'none';
     if (overview) overview.style.display = 'block';
 
-    // Toggle sidebar navigation states cleanly
+    // Toggle sidebar navigation states: Hide "Back to Departments", Show "Active Departments"
     const backDeptsItem = document.getElementById('nav-back-depts');
     const mainDeptsItem = document.getElementById('nav-main-depts');
     if (backDeptsItem) backDeptsItem.style.display = 'none';
-    if (mainDeptsItem) mainDeptsItem.classList.add('active');
+    if (mainDeptsItem) mainDeptsItem.style.display = 'flex';
 }
 
 function applyContainerStyles(el) {
