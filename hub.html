@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Region IX - Command Hub</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .hub-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 100vh;
+            width: 100%;
+            background-color: var(--bg-dark);
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        .hub-container {
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin: auto 0;
+        }
+        .hub-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 20px 28px;
+            border-radius: 12px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .hub-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .hub-portal-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: var(--text-main);
+        }
+        .hub-portal-card:hover {
+            border-color: var(--accent-blue);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.15);
+        }
+        .hub-portal-card .icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        .hub-portal-card h2 { font-size: 1.25rem; font-weight: 600; }
+        .hub-portal-card p { color: var(--text-muted); font-size: 0.88rem; line-height: 1.4; }
+        
+        .hub-footer {
+            width: 100%;
+            max-width: 1000px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .hub-wrapper { padding: 16px; justify-content: flex-start; }
+            .hub-header { flex-direction: column; align-items: flex-start; padding: 18px; gap: 12px; }
+            .hub-cards-grid { grid-template-columns: 1fr; }
+            .hub-footer { flex-direction: column; gap: 12px; text-align: center; }
+            .hub-footer .btn-danger { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hub-wrapper">
+        <div class="hub-container">
+            <div class="hub-header">
+                <div style="display: flex; align-items: center; gap: 14px;">
+                    <i class="fa-solid fa-shield-halved" style="font-size: 1.8rem; color: var(--accent-blue);"></i>
+                    <div>
+                        <h2 style="font-size: 1.15rem; font-weight: 700;">REGION IX COMMAND HUB</h2>
+                        <span id="display-username" style="color: var(--text-muted); font-size: 0.82rem;">Welcome, User</span>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 4px;">
+                <h1 style="font-size: 1.6rem; margin-bottom: 6px;">Select Operations Portal</h1>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">Choose between live activity telemetry, government administration, or department hierarchies.</p>
+            </div>
+
+            <div class="hub-cards-grid">
+                <!-- Activity & Attendance Portal Card -->
+                <a href="activity.html" class="hub-portal-card">
+                    <div class="icon-box" style="background-color: rgba(37, 99, 235, 0.2); color: var(--accent-blue);">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <h2>Activity & Attendance</h2>
+                    <p>Monitor live telemetry feeds, PNP & Government action logs, and review the weekly duty completion attendance sheet.</p>
+                    <div style="margin-top: auto; color: var(--accent-blue); font-weight: 600; font-size: 0.9rem;">
+                        Open Activity Portal <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+                    </div>
+                </a>
+
+                <!-- Government & Rosters Portal Card -->
+                <a href="government.html" class="hub-portal-card" onmouseover="this.style.borderColor='var(--accent-green)';" onmouseout="this.style.borderColor='var(--border-color)';">
+                    <div class="icon-box" style="background-color: rgba(16, 185, 129, 0.2); color: var(--accent-green);">
+                        <i class="fa-solid fa-landmark"></i>
+                    </div>
+                    <h2>Government & Rosters</h2>
+                    <p>Manage citizens registry, PNP active officer rosters, government executive staff, salary grades, treasury, and payroll disbursement.</p>
+                    <div style="margin-top: auto; color: var(--accent-green); font-weight: 600; font-size: 0.9rem;">
+                        Open Government Portal <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+                    </div>
+                </a>
+
+                <!-- Active Departments Portal Card -->
+                <a href="active-departments.html" class="hub-portal-card" onmouseover="this.style.borderColor='var(--accent-gold)';" onmouseout="this.style.borderColor='var(--border-color)';">
+                    <div class="icon-box" style="background-color: rgba(245, 158, 11, 0.2); color: var(--accent-gold);">
+                        <i class="fa-solid fa-building-shield"></i>
+                    </div>
+                    <h2>Active Departments</h2>
+                    <p>Inspect departmental chains of command, organizational trees, leadership structures, and office hierarchies across Region IX.</p>
+                    <div style="margin-top: auto; color: var(--accent-gold); font-weight: 600; font-size: 0.9rem;">
+                        Open Departments Portal <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+
+        <div class="hub-footer">
+            <span style="color: var(--text-muted); font-size: 0.8rem;">Region IX Admin Control System</span>
+            <button class="btn-danger" onclick="handleLogout()" style="padding: 10px 24px; font-weight: 600; width: auto;">Logout Session</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if (!localStorage.getItem('staffToken')) {
+            window.location.href = 'index.html';
+        } else {
+            const username = localStorage.getItem('username') || localStorage.getItem('staffUsername') || 'User';
+            const role = localStorage.getItem('userRole') || localStorage.getItem('staffRole') || 'MEMBER';
+            document.getElementById('display-username').innerText = `Logged in as ${username} (${role})`;
+        }
+    </script>
+</body>
+</html>

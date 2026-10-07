@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Region IX - Government & Rosters Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+    <div class="mobile-header">
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+            <span>GOVERNMENT PORTAL</span>
+        </div>
+        <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <div id="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+                <span>GOVERNMENT PORTAL</span>
+            </div>
+            
+            <div class="nav-scroll-area">
+                <ul class="nav-list">
+                    <li class="nav-item" onclick="window.location.href='hub.html'"><a><i class="fa-solid fa-compass"></i> Command Hub</a></li>
+                    <li class="nav-item active" id="nav-citizens" onclick="switchView('citizens')"><a><i class="fa-solid fa-id-card"></i> Citizens</a></li>
+                    <li class="nav-item" id="nav-officers" onclick="switchView('officers')"><a><i class="fa-solid fa-user-shield"></i> Officers</a></li>
+                    <li class="nav-item" id="nav-government" onclick="switchView('government')"><a><i class="fa-solid fa-landmark"></i> Government</a></li>
+                    <li class="nav-item" id="nav-salary" onclick="switchView('salary')"><a><i class="fa-solid fa-file-invoice-dollar"></i> Salary Tracker</a></li>
+                    <li class="nav-item" id="nav-users" onclick="switchView('users')" style="display: none;"><a><i class="fa-solid fa-users-gear"></i> User Control</a></li>
+                </ul>
+            </div>
+
+            <div class="user-profile-box">
+                <div class="user-info" id="user-display">
+                    <strong id="display-username">User</strong>
+                    <span id="display-role">Role</span>
+                </div>
+                <button class="btn-danger" onclick="handleLogout()" style="width: 100%; margin-top: 4px;">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Citizens View -->
+            <div id="view-citizens" class="view-section active">
+                <div class="header">
+                    <div>
+                        <h1 id="citizens-main-title">Citizens Registry Directory</h1>
+                        <p id="citizens-sub-title">Comprehensive Directory of Civilians, Government Officials, and PNP Personnel</p>
+                    </div>
+                    <div>
+                        <button id="btn-export-citizens" class="btn-success" onclick="exportCitizensList()" style="height: 38px; font-weight: 700;">
+                            <i class="fa-solid fa-paper-plane"></i> Dispatch Citizens List
+                        </button>
+                    </div>
+                </div>
+
+                <div class="tab-btn-group" id="citizens-subtab-group">
+                    <button class="tab-btn active" id="btn-cit-all" onclick="setCitizensSubView('ALL')"><i class="fa-solid fa-list-check"></i> All Overview</button>
+                    <button class="tab-btn" id="btn-cit-civilian" onclick="setCitizensSubView('CIVILIAN')"><i class="fa-solid fa-user"></i> Civilian</button>
+                    <button class="tab-btn" id="btn-cit-gov" onclick="setCitizensSubView('GOV')"><i class="fa-solid fa-landmark"></i> Government Officials</button>
+                    <button class="tab-btn" id="btn-cit-pnp" onclick="setCitizensSubView('PNP')"><i class="fa-solid fa-user-shield"></i> PNP Personnel</button>
+                </div>
+
+                <div class="card" id="card-add-citizen">
+                    <h3>➕ Register New Civilian</h3>
+                    <form onsubmit="handleAddCitizen(event)" class="inline-form-responsive" style="display: flex; gap: 12px; margin-top: 12px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 2; min-width: 240px;">
+                            <label for="add-citizen-name">Full Name</label>
+                            <input type="text" id="add-citizen-name" class="form-control" placeholder="Enter Full Name" required />
+                        </div>
+                        <button type="submit" id="btn-add-citizen" class="btn-primary" style="margin-top: 0; height: 42px;">Register Civilian</button>
+                    </form>
+                    <div id="add-citizen-msg" class="status-msg"></div>
+                </div>
+
+                <div class="card">
+                    <h3 id="citizens-table-title"><i class="fa-solid fa-address-book" style="color: var(--accent-blue);"></i> All Citizens Overview</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr id="citizens-table-header-row">
+                                    <th>ID / Badge</th>
+                                    <th>Classification</th>
+                                    <th>Name</th>
+                                    <th>Title / Position / Rank</th>
+                                    <th id="th-citizens-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="citizens-table-body">
+                                <tr><td colspan="5">Loading citizens directory...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Officers View -->
+            <div id="view-officers" class="view-section">
+                <div class="header">
+                    <div>
+                        <h1>PNP Personnel Directory</h1>
+                        <p>Active Police Officers Roster</p>
+                    </div>
+                </div>
+
+                <div class="card" id="card-add-officer">
+                    <h3>➕ Enlist New PNP Officer</h3>
+                    <form onsubmit="handleAddOfficer(event)" class="inline-form-responsive" style="display: flex; gap: 12px; margin-top: 12px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 2; min-width: 200px;">
+                            <label for="add-officer-name">Officer Name</label>
+                            <input type="text" id="add-officer-name" class="form-control" placeholder="Enter Full Name" required />
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label for="add-officer-rank">Initial Rank</label>
+                            <select id="add-officer-rank" class="form-control">
+                                <optgroup label="Non-Commissioned Officers (Prefix: 09-)">
+                                    <option value="Patrolman" selected>Patrolman</option>
+                                    <option value="Police Corporal">Police Corporal</option>
+                                    <option value="Police Staff Sergeant">Police Staff Sergeant</option>
+                                    <option value="Police Master Sergeant">Police Master Sergeant</option>
+                                    <option value="Police Senior Master Sergeant">Police Senior Master Sergeant</option>
+                                    <option value="Police Chief Master Sergeant">Police Chief Master Sergeant</option>
+                                    <option value="Police Executive Master Sergeant">Police Executive Master Sergeant</option>
+                                </optgroup>
+                                <optgroup label="Commissioned Officers (Prefix: O09-)">
+                                    <option value="Police Lieutenant">Police Lieutenant</option>
+                                    <option value="Police Captain">Police Captain</option>
+                                    <option value="Police Major">Police Major</option>
+                                    <option value="Police Lieutenant Colonel">Police Lieutenant Colonel</option>
+                                    <option value="Police Colonel">Police Colonel</option>
+                                    <option value="Police Brigadier General">Police Brigadier General</option>
+                                    <option value="Police Major General">Police Major General</option>
+                                    <option value="Police Lieutenant General">Police Lieutenant General</option>
+                                    <option value="Police General">Police General</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <button type="submit" id="btn-add-officer" class="btn-primary" style="margin-top: 0; height: 42px;">Enlist Officer</button>
+                    </form>
+                    <div id="add-officer-msg" class="status-msg"></div>
+                </div>
+
+                <div class="card">
+                    <h3>PNP Officers Roster</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr id="officers-table-header-row">
+                                    <th>Badge Number</th>
+                                    <th>Name</th>
+                                    <th>Rank</th>
+                                    <th>Total Points</th>
+                                    <th id="th-officers-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="officers-table-body">
+                                <tr><td colspan="5">Loading PNP Officers...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Government View -->
+            <div id="view-government" class="view-section">
+                <div class="header">
+                    <div>
+                        <h1><i class="fa-solid fa-landmark" style="color: var(--accent-green); margin-right: 8px;"></i>Government Executive & Department Dashboard</h1>
+                        <p>Active Government Officials Roster (Governor, Secretaries, and Department Heads)</p>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(16, 185, 129, 0.2); color: var(--accent-green);"><i class="fa-solid fa-building-columns"></i></div>
+                        <div class="metric-data"><h3 id="gov-total-officials">--</h3><p>Active Officials</p></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(245, 158, 11, 0.2); color: var(--accent-gold);"><i class="fa-solid fa-crown"></i></div>
+                        <div class="metric-data"><h3>Governor's Office</h3><p>Executive Branch</p></div>
+                    </div>
+                </div>
+
+                <div class="card" id="card-add-gov">
+                    <h3>➕ Register Government Official / Department Head</h3>
+                    <form onsubmit="handleAddGov(event)" class="inline-form-responsive" style="display: flex; gap: 12px; margin-top: 12px; align-items: flex-end; flex-wrap: wrap;">
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label for="add-gov-name">Official Name</label>
+                            <input type="text" id="add-gov-name" class="form-control" placeholder="Enter Full Name" required />
+                        </div>
+                        <div class="form-group" style="flex: 1; min-width: 200px;">
+                            <label for="add-gov-pos">Position / Title / Department Head</label>
+                            <input type="text" id="add-gov-pos" class="form-control" placeholder="e.g. Governor, Mayor, Head of Dept" required />
+                        </div>
+                        <button type="submit" id="btn-add-gov" class="btn-primary" style="margin-top: 0; height: 42px;">Register Official</button>
+                    </form>
+                    <div id="add-gov-msg" class="status-msg"></div>
+                </div>
+
+                <div class="card">
+                    <h3><i class="fa-solid fa-users-rectangle" style="color: var(--accent-green); margin-right: 8px;"></i>Active Government Officials & Department Heads Roster</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr id="gov-table-header-row">
+                                    <th>ID Number</th>
+                                    <th>Name</th>
+                                    <th>Position / Department Head</th>
+                                    <th>Total Points</th>
+                                    <th id="th-gov-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gov-table-body">
+                                <tr><td colspan="5">Loading Government Staff...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Salary Tracker View -->
+            <div id="view-salary" class="view-section">
+                <div class="header">
+                    <div>
+                        <h1>Salary Tracker</h1>
+                        <p>Region IX Payroll & Disbursement Overview</p>
+                    </div>
+
+                    <div class="tab-btn-group" style="border: none; align-items: center;">
+                        <button class="tab-btn active" id="btn-sal-tab-all" onclick="setSalarySubView('ALL')"><i class="fa-solid fa-list-check"></i> All View</button>
+                        <button class="tab-btn" id="btn-sal-tab-pnp" onclick="setSalarySubView('PNP')"><i class="fa-solid fa-user-shield"></i> PNP Salaries</button>
+                        <button class="tab-btn" id="btn-sal-tab-gov" onclick="setSalarySubView('GOV')"><i class="fa-solid fa-landmark"></i> Gov Salaries</button>
+
+                        <button id="btn-export-csv" class="btn-success" onclick="exportSalaryCSV()" style="height: 38px; font-weight: 700;">
+                            <i class="fa-solid fa-paper-plane"></i> Dispatch CSV to Accounting
+                        </button>
+                        <button id="btn-export-pdf" class="btn-primary" onclick="exportSalaryPDF()" style="height: 38px; font-weight: 700;">
+                            <i class="fa-solid fa-paper-plane"></i> Dispatch PDF to Accounting
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card" id="card-treasury-control" style="border: 1px solid var(--accent-gold); display: none;">
+                    <h3><i class="fa-solid fa-vault" style="color: var(--accent-gold);"></i> Treasury Pool Balance</h3>
+                    <div class="inline-form-responsive" style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap; margin-top: 14px;">
+                        <div class="form-group" style="flex: 1; min-width: 220px;">
+                            <label for="treasury-amount-input">Current Treasury Balance (PHP)</label>
+                            <input type="number" step="0.01" id="treasury-amount-input" class="form-control" placeholder="0.00" />
+                        </div>
+                        <button type="button" class="btn-success" onclick="updateTreasuryBalance()" style="height: 42px; font-size: 0.88rem; padding: 0 16px;">
+                            <i class="fa-solid fa-floppy-disk"></i> Update Treasury Pool
+                        </button>
+                    </div>
+                    <div id="treasury-status-msg" class="status-msg"></div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(37, 99, 235, 0.2); color: var(--accent-blue);"><i class="fa-solid fa-wallet"></i></div>
+                        <div class="metric-data"><h3 id="stat-total-base">PHP 0.00</h3><p id="stat-lbl-base">Total Base Salary</p></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(245, 158, 11, 0.2); color: var(--accent-gold);"><i class="fa-solid fa-gift"></i></div>
+                        <div class="metric-data"><h3 id="stat-total-incentives">PHP 0.00</h3><p id="stat-lbl-inc">Total Incentives</p></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(16, 185, 129, 0.2); color: var(--accent-green);"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="metric-data"><h3 id="stat-total-weekly">PHP 0.00</h3><p id="stat-lbl-weekly">Total Weekly Gross</p></div>
+                    </div>
+                </div>
+
+                <div class="card" id="card-add-salary" style="display: none;">
+                    <h3>➕ Add / Update Salary Record</h3>
+                    <form id="form-salary" onsubmit="handleSaveSalary(event)">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="sal-personnel-select">Select Personnel <small style="color: var(--text-muted); font-weight: normal;">(Auto-fills details below)</small></label>
+                                <select id="sal-personnel-select" class="form-control" onchange="onSalaryPersonnelSelect()">
+                                    <option value="">-- Select Personnel --</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sal-dept">Department</label>
+                                <select id="sal-dept" class="form-control">
+                                    <option value="PNP">PNP Department</option>
+                                    <option value="GOV">Government Department</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sal-badge">Badge / ID No</label>
+                                <input type="text" id="sal-badge" class="form-control" placeholder="Auto-filled or manual" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sal-title">Title / Role / Position</label>
+                                <input type="text" id="sal-title" class="form-control" placeholder="Auto-filled or manual" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sal-name">Personnel Name</label>
+                                <input type="text" id="sal-name" class="form-control" placeholder="Auto-filled or manual" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sal-base">Base Salary (PHP)</label>
+                                <input type="number" step="0.01" id="sal-base" class="form-control" placeholder="120000.00" required />
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sal-incentives">Incentives (PHP)</label>
+                                <input type="number" step="0.01" id="sal-incentives" class="form-control" value="0.00" required />
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-save-salary" class="btn-primary" style="margin-top: 16px; width: 100%;">Save Salary Record</button>
+                        <div id="sal-status-msg" class="status-msg"></div>
+                    </form>
+                </div>
+
+                <div class="card" id="sal-card-pnp">
+                    <h3 style="color: var(--accent-blue);"><i class="fa-solid fa-user-shield"></i> PNP Department Salary Grade</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr id="pnp-salary-header-row">
+                                    <th>Badge / ID</th>
+                                    <th>Rank / Title</th>
+                                    <th>Name</th>
+                                    <th>Base Salary</th>
+                                    <th>Full Weekly Cap</th>
+                                    <th>Pro-Rated Base</th>
+                                    <th>Incentives</th>
+                                    <th>Total Pro-Rated / Wk</th>
+                                    <th id="th-pnp-status" style="min-width: 170px;">Payment Status</th>
+                                    <th id="th-pnp-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pnp-salary-table-body">
+                                <tr><td colspan="10">Loading PNP salary records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                        <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;"><i class="fa-solid fa-calculator"></i> PNP Salary Breakdown & Deduction Totals</h4>
+                        <div class="salary-summary-banner">
+                            <div class="summary-box">
+                                <span>Total Full Weekly Cap</span>
+                                <strong id="pnp-sum-full-cap" style="color: var(--accent-gold);">PHP 0.00</strong>
+                            </div>
+                            <div class="summary-box">
+                                <span>Total Weekly Gross</span>
+                                <strong id="pnp-sum-total-wk" style="color: var(--accent-blue);">PHP 0.00</strong>
+                            </div>
+                            <div class="summary-box">
+                                <span>Total Disbursed (Paid)</span>
+                                <strong id="pnp-sum-paid" style="color: var(--accent-green);">PHP 0.00</strong>
+                            </div>
+                            <div class="summary-box">
+                                <span>Remaining Unpaid Balance</span>
+                                <strong id="pnp-sum-unpaid" style="color: var(--accent-red);">PHP 0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="sal-card-gov">
+                    <h3 style="color: var(--accent-green);"><i class="fa-solid fa-landmark"></i> Government Staff Salary Grade</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr id="gov-salary-header-row">
+                                    <th>ID Serial</th>
+                                    <th>Position / Title</th>
+                                    <th>Name</th>
+                                    <th>Base Salary</th>
+                                    <th>Full Weekly Cap</th>
+                                    <th>Pro-Rated Base</th>
+                                    <th>Incentives</th>
+                                    <th>Total Pro-Rated / Wk</th>
+                                    <th id="th-gov-status" style="min-width: 170px;">Payment Status</th>
+                                    <th id="th-gov-actions">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gov-salary-table-body">
+                                <tr><td colspan="10">Loading Government salary records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid var(--border-color); padding-top: 16px;">
+                        <h4 style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;"><i class="fa-solid fa-calculator"></i> Government Salary Breakdown & Deduction Totals</h4>
+                        <div class="salary-summary-banner">
+                            <div class="summary-box">
+                                <span>Total Full Weekly Cap</span>
+                                <strong id="gov-sum-full-cap" style="color: var(--accent-gold);">PHP 0.00</strong>
+                            </div>
+                            <div class="summary-box">
+                                <span>Total Weekly Gross</span>
+                                <strong id="gov-sum-total-wk" style="color: var(--accent-blue);">PHP 0.00</strong>
+                            </div>
+                            <div class="summary-box">
+                                <span>Total Disbursed (Paid)</span>
+                                <strong id="gov-sum-paid" style="color: var(--accent-green);">PHP 0.00</strong>
+                            </div>
+                            <div class="summary-box">
+                                <span>Remaining Unpaid Balance</span>
+                                <strong id="gov-sum-unpaid" style="color: var(--accent-red);">PHP 0.00</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" id="card-grand-summary" style="background: linear-gradient(135deg, #131b2e 0%, #0f172a 100%); border: 1px solid var(--accent-blue);">
+                    <h3><i class="fa-solid fa-calculator" style="color: var(--accent-blue);"></i> Combined Overall Total (PNP + Government)</h3>
+                    <div class="salary-summary-banner">
+                        <div class="summary-box">
+                            <span>Total Full Weekly Cap</span>
+                            <strong id="grand-full-cap-total" style="color: var(--accent-gold);">PHP 0.00</strong>
+                        </div>
+                        <div class="summary-box">
+                            <span>Total Gross Weekly Salary</span>
+                            <strong id="grand-gross-total" style="color: var(--accent-blue);">PHP 0.00</strong>
+                        </div>
+                        <div class="summary-box">
+                            <span>Total Disbursed (Paid)</span>
+                            <strong id="grand-paid-total" style="color: var(--accent-green);">PHP 0.00</strong>
+                        </div>
+                        <div class="summary-box">
+                            <span>Total Remaining Unpaid</span>
+                            <strong id="grand-unpaid-total" style="color: var(--accent-red);">PHP 0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Control View -->
+            <div id="view-users" class="view-section">
+                <div class="header">
+                    <div>
+                        <h1>User Permission Control</h1>
+                        <p>Approve Self-Registered Accounts, Assign Roles & Manage Users</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Registered Staff Accounts</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Username</th>
+                                    <th>Badge / ID No</th>
+                                    <th>Department</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-management-table-body">
+                                <tr><td colspan="6">Loading account applications...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if (!localStorage.getItem('staffToken')) {
+            window.location.href = 'index.html';
+        } else {
+            applyRolePermissions();
+            setCitizensSubView('ALL');
+            fetchGovData();
+            setSalarySubView('ALL');
+            fetchSalaryData();
+            fetchTreasuryData();
+        }
+    </script>
+</body>
+</html>

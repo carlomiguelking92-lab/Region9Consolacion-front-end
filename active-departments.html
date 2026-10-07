@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Active Departments - Region IX</title>
+    <link rel="stylesheet" href="style.css" />
+    <!-- FontAwesome & Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+    <div class="mobile-header">
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+            <span>DEPARTMENTS PORTAL</span>
+        </div>
+        <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <div id="app-container">
+      <!-- Sidebar Navigation -->
+      <div class="sidebar" id="sidebar">
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+            <span>DEPARTMENTS PORTAL</span>
+        </div>
+        
+       <div class="nav-scroll-area">
+            <ul class="nav-list">
+                <li class="nav-item" onclick="window.location.href='hub.html'"><a><i class="fa-solid fa-compass"></i> Command Hub</a></li>
+                <li class="nav-item" id="nav-back-depts" style="display: none;" onclick="backToOverview()"><a><i class="fa-solid fa-arrow-left"></i> Back to Departments</a></li>
+                <li class="nav-item active" id="nav-main-depts" onclick="backToOverview()"><a><i class="fa-solid fa-building-shield"></i> Active Departments</a></li>
+            </ul>
+        </div>
+
+        <div class="user-profile-box">
+            <div class="user-info" id="user-display">
+                <strong id="display-username">User</strong>
+                <span id="display-role">Role</span>
+            </div>
+            <button class="btn-danger" onclick="handleLogout()" style="width: 100%; margin-top: 4px;">Logout</button>
+        </div>
+      </div>
+
+      <!-- Main Content Area -->
+      <main class="main-content" id="app-container-main">
+        <!-- VIEW 1: Department Selection Grid (Landing Page) -->
+        <div id="dept-overview-view" class="dept-view-section">
+          <header class="content-header">
+            <h2>Active Departments & Offices</h2>
+            <p>
+              Select a department below to inspect its operational chain of
+              command.
+            </p>
+          </header>
+
+          <!-- Clean 2-Column Grid with Auto-Flow -->
+          <div class="department-cards-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: start; margin-top: 20px;">
+            
+            <!-- Row 1, Left: Governor's Office -->
+            <div class="dept-card" onclick="openDepartment('governors-office')">
+              <div class="dept-card-icon">
+                <i class="fa-solid fa-landmark"></i>
+              </div>
+              <div class="dept-card-info">
+                <h3>Governor's Office</h3>
+                <p>
+                  Executive branch, provincial governance, and administrative
+                  leadership.
+                </p>
+                <span class="dept-action-link"
+                  >View Hierarchy <i class="fa-solid fa-arrow-right"></i
+                ></span>
+              </div>
+            </div>
+
+            <!-- Row 1, Right: Regional Health Department -->
+            <div class="dept-card" onclick="openDepartment('regional-health')">
+              <div class="dept-card-icon">
+                <i class="fa-solid fa-notes-medical"></i>
+              </div>
+              <div class="dept-card-info">
+                <h3>Regional Health Department</h3>
+                <p>
+                  View medical personnel, health officers, and clinic chain of
+                  command.
+                </p>
+                <span class="dept-action-link"
+                  >View Hierarchy <i class="fa-solid fa-arrow-right"></i
+                ></span>
+              </div>
+            </div>
+
+            <!-- Row 2, Left: Mayor's Office -->
+            <div class="dept-card" onclick="openDepartment('mayors-office')">
+              <div class="dept-card-icon"><i class="fa-solid fa-city"></i></div>
+              <div class="dept-card-info">
+                <h3>Mayor's Office</h3>
+                <p>
+                  Municipal management, local district policy, and civic
+                  administration.
+                </p>
+                <span class="dept-action-link"
+                  >View Hierarchy <i class="fa-solid fa-arrow-right"></i
+                ></span>
+              </div>
+            </div>
+
+            <!-- Row 2, Right: Accounting Office -->
+            <div class="dept-card" onclick="openDepartment('accounting-office')">
+              <div class="dept-card-icon">
+                <i class="fa-solid fa-calculator"></i>
+              </div>
+              <div class="dept-card-info">
+                <h3>Accounting Office</h3>
+                <p>
+                  Financial records, payroll disbursement, audit staff, and treasury oversight.
+                </p>
+                <span class="dept-action-link"
+                  >View Hierarchy <i class="fa-solid fa-arrow-right"></i
+                ></span>
+              </div>
+            </div>
+
+            <!-- Row 3, Left: PNP PRO IX Headquarters -->
+            <div class="dept-card" onclick="openDepartment('pnp-hq')">
+              <div class="dept-card-icon">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div class="dept-card-info">
+                <h3>PNP PRO IX Headquarters</h3>
+                <p>
+                  Law enforcement command, high-ranking officers, and field
+                  personnel.
+                </p>
+                <span class="dept-action-link"
+                  >View Hierarchy <i class="fa-solid fa-arrow-right"></i
+                ></span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- VIEW 2: Detailed Tree View Container (Hidden by Default) -->
+        <div
+          id="dept-detail-view"
+          class="dept-view-section"
+          style="display: none"
+        
+          <h3 id="detail-dept-title" class="detail-title">
+            Department Hierarchy
+          </h3>
+
+          <div class="tree-container">
+            <div class="tree" id="department-tree-root">
+              <!-- Dynamically populated tree chart -->
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Link your main JavaScript file -->
+    <script src="app.js"></script>
+    <script>
+      if (!localStorage.getItem('staffToken')) {
+          window.location.href = 'index.html';
+      } else {
+          applyRolePermissions();
+      }
+    </script>
+  </body>
+</html>

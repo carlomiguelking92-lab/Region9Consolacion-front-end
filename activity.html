@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Region IX - Activity & Attendance</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleMobileSidebar()"></div>
+
+    <div class="mobile-header">
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+            <span>ACTIVITY PORTAL</span>
+        </div>
+        <button class="hamburger-btn" onclick="toggleMobileSidebar()" aria-label="Toggle Navigation Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <div id="app-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved" style="color: var(--accent-blue);"></i>
+                <span>ACTIVITY PORTAL</span>
+            </div>
+            
+            <div class="nav-scroll-area">
+                <ul class="nav-list">
+                    <li class="nav-item" onclick="window.location.href='hub.html'"><a><i class="fa-solid fa-compass"></i> Command Hub</a></li>
+                    <li class="nav-item active" id="nav-dashboard" onclick="switchView('dashboard')"><a><i class="fa-solid fa-chart-pie"></i> Activity Tracker</a></li>
+                    <li class="nav-item" id="nav-nowork-nopay" onclick="switchView('nowork-nopay')"><a><i class="fa-solid fa-calendar-check"></i> Attendance Sheet</a></li>
+                </ul>
+            </div>
+
+            <div class="user-profile-box">
+                <div class="user-info" id="user-display">
+                    <strong id="display-username">User</strong>
+                    <span id="display-role">Role</span>
+                </div>
+                <button class="btn-danger" onclick="handleLogout()" style="width: 100%; margin-top: 4px;">Logout</button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Activity Tracker / Dashboard View -->
+            <div id="view-dashboard" class="view-section active">
+                <div class="header">
+                    <div>
+                        <h1>Activity Tracker</h1>
+                        <p>Region IX Live Telemetry & Performance Feeds</p>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(37, 99, 235, 0.2); color: var(--accent-blue);"><i class="fa-solid fa-users"></i></div>
+                        <div class="metric-data"><h3 id="total-officers">--</h3><p>Total Officers</p></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(16, 185, 129, 0.2); color: var(--accent-green);"><i class="fa-solid fa-landmark"></i></div>
+                        <div class="metric-data"><h3 id="total-gov">--</h3><p>Gov Members</p></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3>Personnel Ratio</h3>
+                        <div class="chart-container" style="position: relative; height: 260px; width: 100%;">
+                            <canvas id="dutyChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Recent Activity Feeds</h3>
+                        <div class="activity-split-grid">
+                            <div>
+                                <h4 style="color: var(--accent-blue); margin-bottom: 8px; font-size: 0.92rem;"><i class="fa-solid fa-user-shield"></i> PNP Activity</h4>
+                                <div class="table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr><th>#</th><th>Action</th><th>Target</th></tr>
+                                        </thead>
+                                        <tbody id="pnp-activity-body">
+                                            <tr><td colspan="3">Loading telemetry feed...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 style="color: var(--accent-green); margin-bottom: 8px; font-size: 0.92rem;"><i class="fa-solid fa-landmark"></i> Gov Activity</h4>
+                                <div class="table-responsive">
+                                    <table>
+                                        <thead>
+                                            <tr><th>#</th><th>Action</th><th>Target</th></tr>
+                                        </thead>
+                                        <tbody id="gov-activity-body">
+                                            <tr><td colspan="3">Loading telemetry feed...</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Attendance Sheet View -->
+            <div id="view-nowork-nopay" class="view-section" style="display: none;">
+                <div class="header">
+                    <div>
+                        <h1>Attendance & Duty Completion Sheet</h1>
+                        <p>Pro-rated weekly duty logs & attendance tracking</p>
+                    </div>
+
+                    <div class="tab-btn-group" style="border: none; align-items: center;">
+                        <button class="tab-btn active" id="btn-nowork-all" onclick="setNoWorkSubView('ALL')"><i class="fa-solid fa-list-check"></i> All View</button>
+                        <button class="tab-btn" id="btn-nowork-pnp" onclick="setNoWorkSubView('PNP')"><i class="fa-solid fa-user-shield"></i> PNP Dept</button>
+                        <button class="tab-btn" id="btn-nowork-gov" onclick="setNoWorkSubView('GOV')"><i class="fa-solid fa-landmark"></i> Gov Dept</button>
+                        
+                        <button id="triggerDailyReportBtn" onclick="triggerDailyQuotaReport()" class="btn-warning" style="height: 38px; font-weight: 700;">
+                            ☀️ Daily Report & Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(16, 185, 129, 0.2); color: var(--accent-green);"><i class="fa-solid fa-user-check"></i></div>
+                        <div class="metric-data"><h3 id="nowork-active-count">0</h3><p id="nowork-lbl-active">Active Personnel (1+ Days)</p></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(239, 68, 68, 0.2); color: var(--accent-red);"><i class="fa-solid fa-user-xmark"></i></div>
+                        <div class="metric-data"><h3 id="nowork-zero-count">0</h3><p id="nowork-lbl-inactive">Inactive Personnel (0 Days / PHP 0)</p></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="icon-box" style="background-color: rgba(37, 99, 235, 0.2); color: var(--accent-gold);"><i class="fa-solid fa-sack-dollar"></i></div>
+                        <div class="metric-data"><h3 id="nowork-total-payroll">PHP 0.00</h3><p id="nowork-lbl-payroll">Total Payroll Due</p></div>
+                    </div>
+                </div>
+
+                <div class="card" id="nowork-card-pnp">
+                    <h3 style="color: var(--accent-blue);"><i class="fa-solid fa-user-shield"></i> PNP Department — Attendance Sheet</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Badge Number</th>
+                                    <th>Officer Name</th>
+                                    <th>Rank / Position</th>
+                                    <th>Weekly Attendance</th>
+                                    <th>Duty Completion Status</th>
+                                    <th>Earned Base (Pro-Rated)</th>
+                                    <th>Incentives</th>
+                                    <th>Total Payable</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nowork-pnp-table-body">
+                                <tr><td colspan="8">Loading PNP attendance records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" id="nowork-card-gov" style="margin-top: 16px;">
+                    <h3 style="color: var(--accent-green);"><i class="fa-solid fa-landmark"></i> Government Department — Attendance Sheet</h3>
+                    <div class="table-responsive" style="margin-top: 16px;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Serial No</th>
+                                    <th>Member Name</th>
+                                    <th>Position / Title</th>
+                                    <th>Weekly Attendance</th>
+                                    <th>Duty Completion Status</th>
+                                    <th>Earned Base (Pro-Rated)</th>
+                                    <th>Incentives</th>
+                                    <th>Total Payable</th>
+                                </tr>
+                            </thead>
+                            <tbody id="nowork-gov-table-body">
+                                <tr><td colspan="8">Loading Government attendance records...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        if (!localStorage.getItem('staffToken')) {
+            window.location.href = 'index.html';
+        } else {
+            applyRolePermissions();
+            initChartIfNeeded();
+            fetchDashboardData();
+            setInterval(fetchDashboardData, 8000);
+        }
+    </script>
+</body>
+</html>
