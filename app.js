@@ -2077,7 +2077,7 @@ function openDepartment(deptKey) {
         detail.style.justifyContent = 'flex-start';
     }
 
-    // Toggle sidebar navigation states: Show "Back to Departments", Hide "Active Departments"
+    // Toggle sidebar navigation states
     const backDeptsItem = document.getElementById('nav-back-depts');
     const mainDeptsItem = document.getElementById('nav-main-depts');
     if (backDeptsItem) backDeptsItem.style.display = 'flex';
